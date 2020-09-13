@@ -6,9 +6,15 @@ WORKDIR /workspaces/egg_info_issue/
 
 COPY . .
 
-RUN pip install -e writer &&\
-    pip install -e writing &&\
-    pip install -e innocent
+# build the wheel for writer
+RUN pip wheel ./writer
 
+# build and install writing, making sure the builder can locate writer
+RUN pip install --find-links . ./writing
+
+# build and install innocent
+RUN pip install -e innocent
+
+# output.txt should not appear in output.
 ENTRYPOINT ["ls"]
-CMD ["-la", "/workspaces/egg_info_issue/innocent/innocent.egg-info"]
+CMD ["-la", "innocent/innocent.egg-info"]
